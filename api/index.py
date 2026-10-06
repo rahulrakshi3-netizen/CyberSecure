@@ -1,6 +1,3 @@
-import sys
-sys.path.insert(0, '.')
-from app import app as application
+from app import app
 
-# Vercel WSGI adapter expects 'app'
-app = application
+# Vercel Python runtime
