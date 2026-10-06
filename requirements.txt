@@ -1,16 +1,10 @@
-# Flask web application
-Flask
-Werkzeug
-python-dotenv
-
-# Phishing detection model and feature extraction
-scikit-learn
-pandas
-numpy
-joblib
-tldextract
-
-# PDF report generation
-fpdf
-
-gunicorn
+Flask==3.1.3
+Werkzeug==3.1.9
+python-dotenv==1.2.4
+scikit-learn==1.9.1
+pandas==2.2.3
+numpy==2.2.2
+joblib==1.5.2
+tldextract==5.4.0
+fpdf==1.7.2
+gunicorn==23.0.0
