@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card glass-panel mb-4">
+            <div class="card-header border-bottom border-secondary">
+                <h5 class="mb-0"><i class="fas fa-network-wired text-info me-2"></i>Network Port Scanner</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label text-secondary">Target IP Address or Domain</label>
+                        <input type="text" class="form-control" name="target_ip" placeholder="e.g., 192.168.1.1 or example.com" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Start Scan</button>
+                </form>
+            </div>
+        </div>
+
+        {% if result %}
+        <div class="card glass-panel">
+            <div class="card-body text-center">
+                <h4 class="mb-3">Scan Results for {{ result.target }}</h4>
+                
+                <div class="mb-4">
+                    <div class="display-3 fw-bold 
+                        {% if result.status == 'Safe' %}text-safe
+                        {% elif result.status == 'Moderate' %}text-moderate
+                        {% else %}text-harmful{% endif %}">
+                        {{ result.score }}<span class="fs-4">/100</span>
+                    </div>
+                    <div class="fs-5 mt-2">Status: <strong>{{ result.status }}</strong></div>
+                </div>
+
+                <div class="text-start bg-dark bg-opacity-50 p-3 rounded mb-3">
+                    <h6 class="mb-2"><i class="fas fa-door-open me-2"></i>Open Ports Detected:</h6>
+                    {% if result.open_ports %}
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for port in result.open_ports %}
+                                <span class="badge bg-danger fs-6">{{ port }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-success mb-0"><i class="fas fa-check-circle me-2"></i>No common open ports found.</p>
+                    {% endif %}
+                </div>
+                
+                <div class="text-start bg-dark bg-opacity-50 p-3 rounded border-start border-4 border-info">
+                    <h6 class="text-info mb-1"><i class="fas fa-lightbulb me-2"></i>Solution:</h6>
+                    <p class="mb-0 text-secondary small">{{ result.solution }}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

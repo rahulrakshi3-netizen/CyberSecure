@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+        <div class="card glass-panel mb-4">
+            <div class="card-header border-bottom border-secondary">
+                <h5 class="mb-0"><i class="fas fa-clipboard-list text-danger me-2"></i>Security Log Analyzer</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-secondary">Upload a UTF-8 text log (up to 1 MB). Analysis checks common failed-authentication, warning, and error patterns.</p>
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label" for="file">Log file</label>
+                        <input id="file" type="file" class="form-control bg-dark text-light border-secondary" name="file" accept=".log,.txt,text/plain" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Analyze Log</button>
+                </form>
+            </div>
+        </div>
+
+        {% if result %}
+        <div class="card glass-panel">
+            <div class="card-body">
+                <h5 class="{% if result.status == 'Safe' %}text-success{% elif result.status == 'Moderate' %}text-warning{% else %}text-danger{% endif %}">
+                    {{ result.status }}: {{ result.filename }}
+                </h5>
+                <p class="text-secondary">{{ result.solution }}</p>
+                <div class="row text-center g-3 mb-4">
+                    <div class="col-6 col-md-3"><strong class="d-block">{{ result.line_count }}</strong><span class="small text-secondary">Non-empty lines</span></div>
+                    <div class="col-6 col-md-3"><strong class="d-block text-danger">{{ result.failed_auth_count }}</strong><span class="small text-secondary">Failed/denied</span></div>
+                    <div class="col-6 col-md-3"><strong class="d-block text-danger">{{ result.error_count }}</strong><span class="small text-secondary">Errors</span></div>
+                    <div class="col-6 col-md-3"><strong class="d-block text-warning">{{ result.warning_count }}</strong><span class="small text-secondary">Warnings</span></div>
+                </div>
+                {% if result.sample_events %}
+                <h6>Event samples</h6>
+                <ul class="small text-secondary">
+                    {% for event in result.sample_events %}
+                    <li class="text-break">{{ event }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-success mb-0">No matching events found.</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

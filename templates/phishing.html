@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card glass-panel mb-4">
+            <div class="card-header border-bottom border-secondary">
+                <h5 class="mb-0"><i class="fas fa-fish text-warning me-2"></i>AI Phishing Detector</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label text-secondary">Enter URL to check against ML model</label>
+                        <input type="text" class="form-control" name="url" placeholder="http://suspicious-link.com" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Run Detection</button>
+                </form>
+            </div>
+        </div>
+
+        {% if result %}
+        <div class="card glass-panel">
+            <div class="card-body text-center">
+                <h4 class="mb-3 text-truncate" title="{{ result.url }}">Results for {{ result.url }}</h4>
+                
+                <div class="mb-4">
+                    <div class="display-3 fw-bold 
+                        {% if result.status == 'Safe' %}text-safe
+                        {% elif result.status == 'Moderate' %}text-moderate
+                        {% else %}text-harmful{% endif %}">
+                        {{ result.score }}<span class="fs-4">/100</span>
+                    </div>
+                    <div class="fs-5 mt-2">Prediction: <strong>{{ result.status }}</strong></div>
+                </div>
+
+                <div class="text-start bg-dark bg-opacity-50 p-3 rounded mb-3">
+                    <h6 class="mb-2"><i class="fas fa-microchip me-2"></i>Extracted Features:</h6>
+                    <ul class="mb-0 text-secondary small">
+                        <li>URL Length: {{ result.features[0] }}</li>
+                        <li>Special Characters Present: {% if result.features[1] %}Yes{% else %}No{% endif %}</li>
+                        <li>Number of Subdomains: {{ result.features[2] }}</li>
+                        <li>Uses HTTPS: {% if result.features[3] %}Yes{% else %}No{% endif %}</li>
+                        <li>Suspicious Keywords: {% if result.features[4] %}Detected{% else %}None{% endif %}</li>
+                    </ul>
+                </div>
+                
+                <div class="text-start bg-dark bg-opacity-50 p-3 rounded border-start border-4 border-info">
+                    <h6 class="text-info mb-1"><i class="fas fa-lightbulb me-2"></i>Recommendation:</h6>
+                    <p class="mb-0 text-secondary small">{{ result.solution }}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12 d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+            <h1 class="fw-bold mb-2"><span class="text-info">Cybersecurity</span> Dashboard</h1>
+            <p class="text-secondary mb-0">Security monitoring, scan history, and AI-assisted analysis.</p>
+        </div>
+        <a href="{{ url_for('download_report') }}" class="btn btn-outline-info">
+            <i class="fas fa-file-pdf me-2"></i>Generate PDF Report
+        </a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card glass-panel text-center py-4 h-100">
+            <h6 class="text-secondary">Total Scans</h6>
+            <h2 class="text-info display-5 fw-bold mb-0">{{ total_scans }}</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card glass-panel text-center py-4 h-100">
+            <h6 class="text-secondary">High-risk Findings</h6>
+            <h2 class="text-danger display-5 fw-bold mb-0">{{ total_malware }}</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card glass-panel text-center py-4 h-100">
+            <h6 class="text-secondary">Average Security Score</h6>
+            <h2 class="text-success display-5 fw-bold mb-0">{{ average_score }}<span class="fs-5">/100</span></h2>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-7">
+        <div class="card glass-panel h-100">
+            <div class="card-body">
+                <h5><i class="fas fa-chart-line text-info me-2"></i>Scan Activity (7 days)</h5>
+                <canvas id="trend-chart" aria-label="Scan activity over the last seven days"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card glass-panel h-100">
+            <div class="card-body">
+                <h5><i class="fas fa-chart-pie text-warning me-2"></i>Risk Distribution</h5>
+                <canvas id="risk-chart" aria-label="Scan counts by risk level"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card glass-panel h-100">
+            <div class="card-body">
+                <h5><i class="fas fa-brain text-info me-2"></i>AI &amp; Trend Insights</h5>
+                <p class="text-secondary small">Recommendations based on recorded scan activity and model results.</p>
+                <ul class="mb-0">
+                    {% for insight in insights %}
+                    <li class="mb-2">{{ insight }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card glass-panel h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0"><i class="fas fa-bell text-danger me-2"></i>Recent Alerts</h5>
+                    <a href="{{ url_for('scan_history') }}" class="small">View history</a>
+                </div>
+                {% for alert in alerts %}
+                <div class="border-bottom border-secondary py-2">
+                    <div class="d-flex justify-content-between gap-3">
+                        <strong>{{ alert.scan_type }}</strong>
+                        <span class="badge {% if alert.risk_level == 'High' %}bg-danger{% else %}bg-warning text-dark{% endif %}">{{ alert.risk_level }}</span>
+                    </div>
+                    <div class="small text-secondary text-truncate" title="{{ alert.target }}">{{ alert.target }} &middot; {{ alert.timestamp }}</div>
+                </div>
+                {% else %}
+                <p class="text-secondary mb-0">No moderate or high-risk alerts have been recorded.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="card glass-panel">
+            <div class="card-body">
+                <h5><i class="fas fa-chart-bar text-success me-2"></i>Scans by Tool</h5>
+                <canvas id="scan-type-chart" aria-label="Scans grouped by security tool"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Password Tool -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card glass-panel h-100">
+            <div class="card-body text-center p-4">
+                <div class="fs-1 text-primary mb-3"><i class="fas fa-key"></i></div>
+                <h4>Password Analysis</h4>
+                <p class="text-secondary small mb-4">Check the strength and complexity of your passwords.</p>
+                <a href="{{ url_for('password_check') }}" class="btn btn-outline-info w-100">Analyze Password</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Gen -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card glass-panel h-100">
+            <div class="card-body text-center p-4">
+                <div class="fs-1 text-success mb-3"><i class="fas fa-random"></i></div>
+                <h4>Password Generator</h4>
+                <p class="text-secondary small mb-4">Generate highly secure cryptographic passwords.</p>
+                <a href="{{ url_for('password_gen') }}" class="btn btn-outline-success w-100">Generate</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hash Generator -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card glass-panel h-100">
+            <div class="card-body text-center p-4">
+                <div class="fs-1 text-warning mb-3"><i class="fas fa-file-signature"></i></div>
+                <h4>File Hash Generator</h4>
+                <p class="text-secondary small mb-4">Calculate MD5, SHA1, and SHA256 hashes of files.</p>
+                <a href="{{ url_for('file_hash') }}" class="btn btn-outline-warning w-100">Calculate Hash</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Network Scan -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card glass-panel h-100">
+            <div class="card-body text-center p-4">
+                <div class="fs-1 text-info mb-3"><i class="fas fa-network-wired"></i></div>
+                <h4>Network Scanner</h4>
+                <p class="text-secondary small mb-4">Scan targets for open ports and vulnerabilities.</p>
+                <a href="{{ url_for('network_scan') }}" class="btn btn-outline-info w-100">Scan Network</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- URL Check -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card glass-panel h-100">
+            <div class="card-body text-center p-4">
+                <div class="fs-1 text-danger mb-3"><i class="fas fa-link"></i></div>
+                <h4>URL Analysis</h4>
+                <p class="text-secondary small mb-4">Check links for suspicious patterns and risks.</p>
+                <a href="{{ url_for('url_check') }}" class="btn btn-outline-danger w-100">Check URL</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phishing Detect -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card glass-panel h-100">
+            <div class="card-body text-center p-4">
+                <div class="fs-1 text-danger mb-3"><i class="fas fa-fish"></i></div>
+                <h4>Phishing Detector</h4>
+                <p class="text-secondary small mb-4">AI-powered phishing website detection.</p>
+                <a href="{{ url_for('phishing_detect') }}" class="btn btn-outline-danger w-100">Detect Phishing</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+        <div class="card glass-panel h-100">
+            <div class="card-body text-center p-4">
+                <div class="fs-1 text-warning mb-3"><i class="fas fa-fingerprint"></i></div>
+                <h4>File Integrity Verification</h4>
+                <p class="text-secondary small mb-4">Compare a file's SHA-256 digest with a trusted reference.</p>
+                <a href="{{ url_for('file_integrity') }}" class="btn btn-outline-warning w-100">Verify Integrity</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+        <div class="card glass-panel h-100">
+            <div class="card-body text-center p-4">
+                <div class="fs-1 text-danger mb-3"><i class="fas fa-clipboard-list"></i></div>
+                <h4>Security Log Analyzer</h4>
+                <p class="text-secondary small mb-4">Find common warnings, errors, and failed authentication events in a log.</p>
+                <a href="{{ url_for('security_log_analysis') }}" class="btn btn-outline-danger w-100">Analyze Log</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const riskCounts = {{ risk_counts|tojson }};
+    const scanTypeCounts = {{ scan_type_counts|tojson }};
+    const trendLabels = {{ trend_labels|tojson }};
+    const trendValues = {{ trend_values|tojson }};
+    const chartText = '#d1d5db';
+
+    new Chart(document.getElementById('trend-chart'), {
+        type: 'line',
+        data: {
+            labels: trendLabels,
+            datasets: [{ label: 'Scans', data: trendValues, borderColor: '#00d2ff', backgroundColor: 'rgba(0, 210, 255, 0.15)', fill: true, tension: 0.3 }]
+        },
+        options: { responsive: true, scales: { x: { ticks: { color: chartText } }, y: { beginAtZero: true, ticks: { color: chartText, precision: 0 } } }, plugins: { legend: { labels: { color: chartText } } } }
+    });
+
+    new Chart(document.getElementById('risk-chart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Low', 'Medium', 'High'],
+            datasets: [{ data: [riskCounts.Low || 0, riskCounts.Medium || 0, riskCounts.High || 0], backgroundColor: ['#198754', '#ffc107', '#dc3545'] }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: chartText } } } }
+    });
+
+    new Chart(document.getElementById('scan-type-chart'), {
+        type: 'bar',
+        data: {
+            labels: Object.keys(scanTypeCounts),
+            datasets: [{ label: 'Scans', data: Object.values(scanTypeCounts), backgroundColor: '#3a7bd5' }]
+        },
+        options: { responsive: true, scales: { x: { ticks: { color: chartText } }, y: { beginAtZero: true, ticks: { color: chartText, precision: 0 } } }, plugins: { legend: { labels: { color: chartText } } } }
+    });
+</script>
+{% endblock %}

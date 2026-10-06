@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card glass-panel mb-4">
+            <div class="card-header border-bottom border-secondary">
+                <h5 class="mb-0"><i class="fas fa-file-signature text-warning me-2"></i>File Hash Generator</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label text-secondary">Select File to Hash</label>
+                        <input type="file" class="form-control bg-dark text-light border-secondary" name="file" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Generate Hashes</button>
+                </form>
+            </div>
+        </div>
+
+        {% if result %}
+        <div class="card glass-panel">
+            <div class="card-header bg-dark bg-opacity-25 border-bottom border-secondary">
+                <h6 class="mb-0 text-truncate">Results for: <span class="text-info">{{ result.filename }}</span></h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush rounded">
+                    <div class="list-group-item bg-transparent border-secondary py-3">
+                        <h6 class="text-secondary mb-1">MD5</h6>
+                        <code class="text-light user-select-all word-wrap text-break">{{ result.md5 }}</code>
+                    </div>
+                    <div class="list-group-item bg-transparent border-secondary py-3">
+                        <h6 class="text-secondary mb-1">SHA-1</h6>
+                        <code class="text-light user-select-all word-wrap text-break">{{ result.sha1 }}</code>
+                    </div>
+                    <div class="list-group-item bg-transparent border-secondary py-3">
+                        <h6 class="text-secondary mb-1">SHA-256</h6>
+                        <code class="text-light user-select-all word-wrap text-break">{{ result.sha256 }}</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

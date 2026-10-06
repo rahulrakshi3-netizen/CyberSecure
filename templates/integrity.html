@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+        <div class="card glass-panel mb-4">
+            <div class="card-header border-bottom border-secondary">
+                <h5 class="mb-0"><i class="fas fa-fingerprint text-warning me-2"></i>File Integrity Verification</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-secondary">Select a file and compare its SHA-256 hash with a trusted reference value.</p>
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label" for="file">File to verify</label>
+                        <input id="file" type="file" class="form-control bg-dark text-light border-secondary" name="file" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="expected_sha256">Expected SHA-256</label>
+                        <input id="expected_sha256" type="text" class="form-control font-monospace" name="expected_sha256" minlength="64" maxlength="64" pattern="[A-Fa-f0-9]{64}" placeholder="64 hexadecimal characters" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Verify File</button>
+                </form>
+            </div>
+        </div>
+
+        {% if result %}
+        <div class="card glass-panel">
+            <div class="card-body">
+                <h5 class="{% if result.status == 'Safe' %}text-success{% else %}text-danger{% endif %}">
+                    {{ result.status }}: {{ result.filename }}
+                </h5>
+                <p class="text-secondary">{{ result.solution }}</p>
+                <h6>Calculated SHA-256</h6>
+                <code class="d-block text-light text-break user-select-all">{{ result.actual_hash }}</code>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

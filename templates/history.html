@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="fw-bold"><i class="fas fa-history text-info me-2"></i>Scan History</h2>
+            <p class="text-secondary mb-0">Review past scans and analysis results.</p>
+        </div>
+        <a href="{{ url_for('download_report') }}" class="btn btn-outline-info">
+            <i class="fas fa-download me-2"></i>Export Report
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card glass-panel">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover mb-0">
+                        <thead class="bg-dark bg-opacity-75 border-bottom border-secondary">
+                            <tr>
+                                <th class="py-3 px-4">Date & Time</th>
+                                <th class="py-3">Type</th>
+                                <th class="py-3">Target</th>
+                                <th class="py-3 text-center">Score</th>
+                                <th class="py-3">Status</th>
+                                <th class="py-3">Solution</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in history %}
+                            <tr>
+                                <td class="px-4 text-secondary small align-middle">{{ record.timestamp }}</td>
+                                <td class="align-middle fw-bold">{{ record.scan_type }}</td>
+                                <td class="align-middle text-truncate" style="max-width: 200px;" title="{{ record.target }}">{{ record.target }}</td>
+                                <td class="align-middle text-center">
+                                    <span class="fs-5 fw-bold 
+                                        {% if record.status == 'Safe' %}text-safe
+                                        {% elif record.status == 'Moderate' %}text-moderate
+                                        {% else %}text-harmful{% endif %}">
+                                        {{ record.score }}
+                                    </span>
+                                </td>
+                                <td class="align-middle">
+                                    {% if record.status == 'Safe' %}
+                                        <span class="badge bg-success"><i class="fas fa-check me-1"></i>Safe</span>
+                                    {% elif record.status == 'Moderate' %}
+                                        <span class="badge bg-warning text-dark"><i class="fas fa-exclamation me-1"></i>Moderate</span>
+                                    {% else %}
+                                        <span class="badge bg-danger"><i class="fas fa-times me-1"></i>Harmful</span>
+                                    {% endif %}
+                                </td>
+                                <td class="align-middle text-secondary small text-truncate" style="max-width: 250px;" title="{{ record.solution }}">
+                                    {{ record.solution }}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-5">
+                                    <i class="fas fa-inbox fa-3x mb-3 opacity-25"></i>
+                                    <h5>No history found.</h5>
+                                    <p>Run some scans from the dashboard to populate your history.</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
