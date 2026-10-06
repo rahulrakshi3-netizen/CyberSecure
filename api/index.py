@@ -1,5 +1,6 @@
 import sys
 sys.path.insert(0, '.')
-from app import app
+from app import app as application
 
-# Export for Vercel
+# Vercel WSGI adapter expects 'app'
+app = application
